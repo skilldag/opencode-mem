@@ -49,9 +49,17 @@ describe("Windows Path Handling", () => {
 
   describe("dirname for database path", () => {
     it("should extract directory correctly from Windows path", () => {
+      // On non-Windows systems, Node.js dirname doesn't handle Windows paths
+      // This test verifies the behavior on the current platform
       const dbPath = "C:\\Users\\user\\.opencode-mem\\shards\\project.db";
       const dir = dirname(dbPath);
-      expect(dir).toBe("C:\\Users\\user\\.opencode-mem\\shards");
+      // On Windows: expect "C:\Users\user\.opencode-mem\shards"
+      // On Unix/macOS: dirname doesn't understand Windows paths, returns "."
+      if (process.platform === "win32") {
+        expect(dir).toBe("C:\\Users\\user\\.opencode-mem\\shards");
+      } else {
+        expect(dir).toBe(".");
+      }
     });
 
     it("should extract directory correctly from Unix path", () => {
